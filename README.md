@@ -73,6 +73,15 @@ From the Amazon [documentation](http://docs.aws.amazon.com/AmazonS3/latest/dev/U
 
 > In terms of implementation, buckets and objects are resources, and Amazon S3 provides APIs for you to manage them.
 
+## Run with Docker
+Create Image
+
+`docker build -t sandcastle .`
+
+Run the container
+
+` docker run -it --rm "sandcastle" -t lime -f bucket-names.txt`
+
 ## Closing remarks
 * This is my first public security project. Sandcastle is published under the MIT License.
 * Usage acknowlegements:
