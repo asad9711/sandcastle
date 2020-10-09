@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import sys, os, commands, requests
+import sys, os, subprocess, requests
 from argparse import ArgumentParser
 
-print """
+print("""
    ____             __             __  __   
   / __/__ ____  ___/ /______ ____ / /_/ /__ 
  _\ \/ _ `/ _ \/ _  / __/ _ `(_-</ __/ / -_)
@@ -12,13 +12,13 @@ print """
                                             
 S3 bucket enumeration // release v1.2.4 // ysx
 
-"""
+""")
 targetStem = ""
 inputFile = ""
 
 parser = ArgumentParser()
 parser.add_argument("-t", "--target", dest="targetStem",
-                    help="Select a target stem name (e.g. 'shopify')", metavar="targetStem", required="True")
+                    help="Select a target stem name (e.g. 'shopify')", metavar="targetStem", required=True)
 parser.add_argument("-f", "--file", dest="inputFile",
                     help="Select a bucket permutation file (default: bucket-names.txt)", default="bucket-names.txt", metavar="inputFile")
 args = parser.parse_args()
@@ -27,17 +27,17 @@ with open(args.inputFile, 'r') as f:
     bucketNames = [line.strip() for line in f] 
     lineCount = len(bucketNames)
 
-print "[*] Commencing enumeration of '%s', reading %i lines from '%s'." % (args.targetStem, lineCount, f.name)
+print("[*] Commencing enumeration of '%s', reading %i lines from '%s'." % (args.targetStem, lineCount, f.name))
 
 for name in bucketNames:
 	r = requests.head("http://%s%s.s3.amazonaws.com" % (args.targetStem, name))
 	if r.status_code != 404:
                 # macOS, coming soon: os.system("notify Potential match found! %s%s: %s" % (args.targetStem, name, r.status_code))
-		print "[+] Checking potential match: %s%s --> %s" % (args.targetStem, name, r.status_code)
-		check = commands.getoutput("/usr/local/bin/aws s3 ls s3://%s%s" % (args.targetStem, name))
-		print check
+		print("[+] Checking potential match: %s%s --> %s" % (args.targetStem, name, r.status_code))
+		check = subprocess.check_output(["/usr/local/bin/aws", "s3", "ls", f"s3://{args.targetStem}{name}"])
+		print(check)
 	else:
 		sys.stdout.write('')
 
-print "[*] Enumeration of '%s' buckets complete." % (args.targetStem)
+print("[*] Enumeration of '%s' buckets complete." % (args.targetStem))
 # macOS, coming soon: os.system("notify Enumeration of %s buckets complete." % (args.targetStem))
